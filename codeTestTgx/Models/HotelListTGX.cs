@@ -22,6 +22,11 @@
 
     public class HotelTGX
     {
+        public string Code { get; set; }
+        public string Name { get; set; }
+        public string City { get; set; }
+        public List<RoomsTGX> Rooms { get; set; }
+
         public HotelTGX(string Code, string Name, string City)
         {
             this.Code = Code;
@@ -29,16 +34,15 @@
             this.City = City;
             this.Rooms = new List<RoomsTGX>();
         }
-
-        public string Code { get; set; }
-        public string Name { get; set; }
-        public string City { get; set; }
-        public List<RoomsTGX> Rooms { get; set; }
     }
 
     public class HotelListTGX
     {
         public List<HotelTGX> hotels { get; set; }
+        public HotelListTGX()
+        {
+            this.hotels = new List<HotelTGX>();
+        }
     }
 
 }
