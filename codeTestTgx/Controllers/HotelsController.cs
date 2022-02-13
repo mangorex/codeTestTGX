@@ -27,24 +27,20 @@ namespace codeTestTgx.Controllers
             // Instantiate result variable of hotel list respecting TravelgateX format
             HotelListTGX hotelsTGX = new HotelListTGX();
 
-            hotelsTGX = await GetHotelsAtalayaAsync(hotelsTGX);
-            hotelsTGX = await GetApiResortAsync(hotelsTGX);
+            await GetHotelsAtalayaAsync(hotelsTGX);
+            await GetApiResortAsync(hotelsTGX);
 
             return hotelsTGX;
         }
 
         #endregion
-        /* In the functions below I decided to use parameters and return of the 
-        * same parameter because using ref is not allowed in asynchronous functions
-        * It is asynchronous function because I want to use ReadAsAsync 
-        */
 
         #region AtalayaHotels
 
         /* Function private asynchronous to obtain data of Atalaya Hotels and save information
         * in TravelgateX format Receive HotelListTGX and return hotelListTGX
         */
-        private async Task<HotelListTGX> GetHotelsAtalayaAsync(HotelListTGX hotelsTGX)
+        private async Task GetHotelsAtalayaAsync(HotelListTGX hotelsTGX)
         {
             // Get of hotels list in Atalaya format
             HttpResponseMessage responseHotels = await client.GetAsync(pathHotelsAtalaya);
@@ -60,18 +56,16 @@ namespace codeTestTgx.Controllers
                 foreach (HotelTGX hotel in atalaya.hotels)
                 {
                     HotelTGX hotelTGX = new HotelTGX(hotel.Code, hotel.Name, hotel.City);
-                    hotelTGX = await GetRoomsAtalaya(hotelTGX, hotel, rooms);
+                    await GetRoomsAtalaya(hotelTGX, hotel, rooms);
                     hotelsTGX.hotels.Add(hotelTGX);
                 }
-
             }
-
-            return hotelsTGX;
         }
 
         // Function private to get Rooms of atalaya
         // This functions calls to GetMealPlansInRooms to get Meal plans and duplicate rooms correctly
-        private async Task<HotelTGX> GetRoomsAtalaya(HotelTGX hotelTGX, HotelTGX hotel, RoomsTypes rooms)
+        // private async Task<HotelTGX> GetRoomsAtalaya(HotelTGX hotelTGX, HotelTGX hotel, RoomsTypes rooms)
+        private async Task GetRoomsAtalaya(HotelTGX hotelTGX, HotelTGX hotel, RoomsTypes rooms)
         {
             // Loop to save roooms in TravelgateX format
             foreach (RoomsType roomType in rooms.rooms_type)
@@ -89,18 +83,18 @@ namespace codeTestTgx.Controllers
                         {
                             MealPlanAtalaya mealPlanAtalaya = await
                             responseMealPlan.Content.ReadAsAsync<MealPlanAtalaya>();
-                            hotelTGX = await GetMealPlansInRooms(hotelTGX, hotel, roomTGX,
+                            GetMealPlansInRooms(hotelTGX, hotel, roomTGX,
                                 mealPlanAtalaya, roomType);
                         }
                     }
                 }
             }
-            return hotelTGX;
         }
 
         // This functin get meal plans and duplicate rooms saving code mealplan and price
-        private async Task<HotelTGX> GetMealPlansInRooms( HotelTGX hotelTGX, HotelTGX hotel, RoomTGX roomTGX, 
-            MealPlanAtalaya mealPlanAtalaya, RoomsType roomType )
+        // private async Task<HotelTGX> GetMealPlansInRooms( HotelTGX hotelTGX, HotelTGX hotel, RoomTGX roomTGX, 
+        private void GetMealPlansInRooms(HotelTGX hotelTGX, HotelTGX hotel, RoomTGX roomTGX,
+            MealPlanAtalaya mealPlanAtalaya, RoomsType roomType)
         {
             foreach (MealPlan mealPlan in mealPlanAtalaya.meal_plans)
             {
@@ -144,18 +138,16 @@ namespace codeTestTgx.Controllers
                     roomTGX = new RoomTGX(roomType);
                 }
             }
-
-            return hotelTGX;
         }
 
-    #endregion
+        #endregion
 
         #region ApiResort
 
         /* Function private asynchronous to obtain data of Api Resort Hotels and save information in TravelgateX format
         *  Receive HotelListTGX and return hotelListTGX
         */
-        private async Task<HotelListTGX> GetApiResortAsync(HotelListTGX hotelsTGX)
+        private async Task GetApiResortAsync(HotelListTGX hotelsTGX)
         {
             // Get of hotels list in API Resort format
             HttpResponseMessage responseHotels = await client.GetAsync(pathHotelsApiResort);
@@ -167,26 +159,23 @@ namespace codeTestTgx.Controllers
                 foreach (HotelApiResort hotel in apiResort.hotels)
                 {
                     HotelTGX hotelTGX = new HotelTGX(hotel.code, hotel.name, hotel.location);
-                    hotelTGX = await GetRoomsApiResort(hotelTGX, hotel);
+                    GetRoomsApiResort(hotelTGX, hotel);
                     hotelsTGX.hotels.Add(hotelTGX);
                 }
             }
 
-            return hotelsTGX;
         }
 
-        private async Task<HotelTGX> GetRoomsApiResort(HotelTGX hotelTGX, HotelApiResort hotel)
+        private void GetRoomsApiResort(HotelTGX hotelTGX, HotelApiResort hotel)
         {
             foreach (RoomApiResort roomApiResort in hotel.rooms)
             {
                 RoomTGX roomTGX = new RoomTGX(roomApiResort);
                 hotelTGX.Rooms.Add(roomTGX);
             }
-
-            return hotelTGX;
         }
 
-    #endregion
+        #endregion
 
     }
 }
