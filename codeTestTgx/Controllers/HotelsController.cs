@@ -17,6 +17,8 @@ namespace codeTestTgx.Controllers
         static string pathMealPlanAtalaya = "http://www.mocky.io/v2/5e4a7e282f0000490097d252";
         static string pathHotelsApiResort = "http://www.mocky.io/v2/5e4e43272f00006c0016a52b";
 
+        #region Endpoints
+        
         // GET: api/Hotels
         [HttpGet]
         [Route("/api/hotelList")]
@@ -31,6 +33,7 @@ namespace codeTestTgx.Controllers
             return hotelsTGX;
         }
 
+        #endregion
         /* In the functions below I decided to use parameters and return of the 
         * same parameter because using ref is not allowed in asynchronous functions
         * It is asynchronous function because I want to use ReadAsAsync 
@@ -66,6 +69,8 @@ namespace codeTestTgx.Controllers
             return hotelsTGX;
         }
 
+        // Function private to get Rooms of atalaya
+        // This functions calls to GetMealPlansInRooms to get Meal plans and duplicate rooms correctly
         private async Task<HotelTGX> GetRoomsAtalaya(HotelTGX hotelTGX, HotelTGX hotel, RoomsTypes rooms)
         {
             // Loop to save roooms in TravelgateX format
@@ -84,50 +89,8 @@ namespace codeTestTgx.Controllers
                         {
                             MealPlanAtalaya mealPlanAtalaya = await
                             responseMealPlan.Content.ReadAsAsync<MealPlanAtalaya>();
-
-                            foreach (MealPlan mealPlan in mealPlanAtalaya.meal_plans)
-                            {
-                                if(nameof(mealPlan.hotel.acs).Equals(hotel.Code) ) 
-                                {
-                                    Hotel hotelMealPlan = mealPlan.hotel;
-                                    Acs acs = (Acs)hotelMealPlan.acs.FirstOrDefault();
-                                    roomTGX.Price = acs.price;
-                                    roomTGX.Meals_plan = mealPlan.code;
-                                    hotelTGX.Rooms.Add(roomTGX);
-
-                                    for (int i = 1; i < hotelMealPlan.acs.Count; i++)
-                                    {
-                                        roomTGX = new RoomTGX(roomType);
-                                        acs = hotelMealPlan.acs[i];
-                                        roomTGX.Price = acs.price;
-                                        roomTGX.Meals_plan = mealPlan.code;
-                                        hotelTGX.Rooms.Add(roomTGX);
-                                    }
-
-                                    roomTGX = new RoomTGX(roomType);
-                                }
-
-                                else if (nameof(mealPlan.hotel.ave).Equals(hotel.Code))
-                                {
-                                    Hotel hotelMealPlan = mealPlan.hotel;
-                                    Ave ave = (Ave)hotelMealPlan.ave.FirstOrDefault();
-                                    roomTGX.Price = ave.price;
-                                    roomTGX.Meals_plan = mealPlan.code;
-                                    hotelTGX.Rooms.Add(roomTGX);
-
-                                    for (int i = 1; i < hotelMealPlan.ave.Count; i++)
-                                    {
-                                        roomTGX = new RoomTGX(roomType);
-                                        ave = hotelMealPlan.ave[i];
-                                        roomTGX.Price = ave.price;
-                                        roomTGX.Meals_plan = mealPlan.code;
-                                        hotelTGX.Rooms.Add(roomTGX);
-                                    }
-
-                                    roomTGX = new RoomTGX(roomType);
-                                }
-
-                            }
+                            hotelTGX = await GetMealPlansInRooms(hotelTGX, hotel, roomTGX,
+                                mealPlanAtalaya, roomType);
                         }
                     }
                 }
@@ -135,6 +98,55 @@ namespace codeTestTgx.Controllers
             return hotelTGX;
         }
 
+        // This functin get meal plans and duplicate rooms saving code mealplan and price
+        private async Task<HotelTGX> GetMealPlansInRooms( HotelTGX hotelTGX, HotelTGX hotel, RoomTGX roomTGX, 
+            MealPlanAtalaya mealPlanAtalaya, RoomsType roomType )
+        {
+            foreach (MealPlan mealPlan in mealPlanAtalaya.meal_plans)
+            {
+                if (nameof(mealPlan.hotel.acs).Equals(hotel.Code))
+                {
+                    Hotel hotelMealPlan = mealPlan.hotel;
+                    Acs acs = (Acs)hotelMealPlan.acs.FirstOrDefault();
+                    roomTGX.Price = acs.price;
+                    roomTGX.Meals_plan = mealPlan.code;
+                    hotelTGX.Rooms.Add(roomTGX);
+
+                    for (int i = 1; i < hotelMealPlan.acs.Count; i++)
+                    {
+                        roomTGX = new RoomTGX(roomType);
+                        acs = hotelMealPlan.acs[i];
+                        roomTGX.Price = acs.price;
+                        roomTGX.Meals_plan = mealPlan.code;
+                        hotelTGX.Rooms.Add(roomTGX);
+                    }
+
+                    roomTGX = new RoomTGX(roomType);
+                }
+
+                else if (nameof(mealPlan.hotel.ave).Equals(hotel.Code))
+                {
+                    Hotel hotelMealPlan = mealPlan.hotel;
+                    Ave ave = (Ave)hotelMealPlan.ave.FirstOrDefault();
+                    roomTGX.Price = ave.price;
+                    roomTGX.Meals_plan = mealPlan.code;
+                    hotelTGX.Rooms.Add(roomTGX);
+
+                    for (int i = 1; i < hotelMealPlan.ave.Count; i++)
+                    {
+                        roomTGX = new RoomTGX(roomType);
+                        ave = hotelMealPlan.ave[i];
+                        roomTGX.Price = ave.price;
+                        roomTGX.Meals_plan = mealPlan.code;
+                        hotelTGX.Rooms.Add(roomTGX);
+                    }
+
+                    roomTGX = new RoomTGX(roomType);
+                }
+            }
+
+            return hotelTGX;
+        }
 
     #endregion
 
