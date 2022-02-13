@@ -18,8 +18,9 @@ namespace codeTestTgx.Controllers
     public class HotelsController : ControllerBase
     {
         static HttpClient client = new HttpClient();
-        static string pathHotels = "http://www.mocky.io/v2/5e4a7e4f2f00005d0097d253";
+        static string pathHotelsAtalaya = "http://www.mocky.io/v2/5e4a7e4f2f00005d0097d253";
         static string pathRooms = "https://run.mocky.io/v3/132af02e-8beb-438f-ac6e-a9902bc67036";
+        static string pathHotelsApiResort = "http://www.mocky.io/v2/5e4e43272f00006c0016a52b";
 
         /*private readonly TodoContext _context;
         public HotelsController(TodoContext context)
@@ -36,7 +37,7 @@ namespace codeTestTgx.Controllers
             hotelsResul.hotels = new List<Hotel>();
             Rooms roomResul = new Rooms();
 
-            HttpResponseMessage responseHotels = await client.GetAsync(pathHotels);
+            HttpResponseMessage responseHotels = await client.GetAsync(pathHotelsAtalaya);
             if (responseHotels.IsSuccessStatusCode)
             {
                 Hotels atalaya = await responseHotels.Content.ReadAsAsync<Hotels>();
