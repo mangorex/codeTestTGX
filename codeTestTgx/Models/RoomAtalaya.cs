@@ -1,6 +1,6 @@
 ﻿namespace codeTestTgx.Models
 {
-    // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
+    // Model to get json of hotelList in RoomApiResort
     public class RoomsType
     {
         public List<string> hotels { get; set; }
