@@ -11,13 +11,51 @@
         Suite
     }
 
-    public class RoomsTGX
+    public enum Meal_plan
+    {
+        Pc,
+        Mp,
+        Sa,
+        Ad
+    }
+
+    public class RoomTGX
     {
         public string Name { get; set; }
         public Room_Type Room_type { get; set; }
-        public List<string> Meals_plan { get; set; }
-        public string Price { get; set; }
-      
+        public string Meals_plan { get; set; }
+        public int Price { get; set; }
+
+        public RoomTGX(RoomsType roomType)
+        {
+            this.Name = roomType.name;
+            if (roomType.code.Equals(
+                    nameof(Room_Type.Suite).ToString().ToLower())
+                )
+            {
+                this.Room_type = Room_Type.Suite;
+            }
+            else
+            {
+                this.Room_type = Room_Type.Standard;
+            }
+        }
+
+        public RoomTGX(RoomApiResort roomApiResort)
+        {
+            this.Name = roomApiResort.name;
+
+            // Distinction of the type of room by the name
+            if (roomApiResort.name.ToUpper().Equals(nameof(Room_Type.Suite).ToString().ToUpper()))
+            {
+                this.Room_type = Room_Type.Suite;
+            }
+            else
+            {
+                this.Room_type = Room_Type.Standard;
+            }
+        }
+
     }
 
     public class HotelTGX
@@ -25,14 +63,14 @@
         public string Code { get; set; }
         public string Name { get; set; }
         public string City { get; set; }
-        public List<RoomsTGX> Rooms { get; set; }
+        public List<RoomTGX> Rooms { get; set; }
 
         public HotelTGX(string Code, string Name, string City)
         {
             this.Code = Code;
             this.Name = Name;
             this.City = City;
-            this.Rooms = new List<RoomsTGX>();
+            this.Rooms = new List<RoomTGX>();
         }
     }
 

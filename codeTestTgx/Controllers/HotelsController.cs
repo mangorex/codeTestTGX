@@ -37,6 +37,7 @@ namespace codeTestTgx.Controllers
         */
 
         #region AtalayaHotels
+
         /* Function private asynchronous to obtain data of Atalaya Hotels and save information
         * in TravelgateX format Receive HotelListTGX and return hotelListTGX
         */
@@ -72,29 +73,73 @@ namespace codeTestTgx.Controllers
             {
                 foreach (String hotelCode in roomType.hotels)
                 {
-                    RoomsTGX roomTGX = new RoomsTGX();
+                    RoomTGX roomTGX = new RoomTGX(roomType);
 
                     if (hotelCode.Equals(hotel.Code))
                     {
-                        roomTGX.Name = roomType.name;
-                        if (roomType.code.Equals(nameof(Room_Type.Suite).ToString().ToLower()))
+                        HttpResponseMessage responseMealPlan =
+                            await client.GetAsync(pathMealPlanAtalaya);
+
+                        if (responseMealPlan.IsSuccessStatusCode)
                         {
-                            roomTGX.Room_type = Room_Type.Suite;
+                            MealPlanAtalaya mealPlanAtalaya = await
+                            responseMealPlan.Content.ReadAsAsync<MealPlanAtalaya>();
+
+                            foreach (MealPlan mealPlan in mealPlanAtalaya.meal_plans)
+                            {
+                                if(nameof(mealPlan.hotel.acs).Equals(hotel.Code) ) 
+                                {
+                                    Hotel hotelMealPlan = mealPlan.hotel;
+                                    Acs acs = (Acs)hotelMealPlan.acs.FirstOrDefault();
+                                    roomTGX.Price = acs.price;
+                                    roomTGX.Meals_plan = mealPlan.code;
+                                    hotelTGX.Rooms.Add(roomTGX);
+
+                                    for (int i = 1; i < hotelMealPlan.acs.Count; i++)
+                                    {
+                                        roomTGX = new RoomTGX(roomType);
+                                        acs = hotelMealPlan.acs[i];
+                                        roomTGX.Price = acs.price;
+                                        roomTGX.Meals_plan = mealPlan.code;
+                                        hotelTGX.Rooms.Add(roomTGX);
+                                    }
+
+                                    roomTGX = new RoomTGX(roomType);
+                                }
+
+                                else if (nameof(mealPlan.hotel.ave).Equals(hotel.Code))
+                                {
+                                    Hotel hotelMealPlan = mealPlan.hotel;
+                                    Ave ave = (Ave)hotelMealPlan.ave.FirstOrDefault();
+                                    roomTGX.Price = ave.price;
+                                    roomTGX.Meals_plan = mealPlan.code;
+                                    hotelTGX.Rooms.Add(roomTGX);
+
+                                    for (int i = 1; i < hotelMealPlan.ave.Count; i++)
+                                    {
+                                        roomTGX = new RoomTGX(roomType);
+                                        ave = hotelMealPlan.ave[i];
+                                        roomTGX.Price = ave.price;
+                                        roomTGX.Meals_plan = mealPlan.code;
+                                        hotelTGX.Rooms.Add(roomTGX);
+                                    }
+
+                                    roomTGX = new RoomTGX(roomType);
+                                }
+
+                            }
                         }
-                        else
-                        {
-                            roomTGX.Room_type = Room_Type.Standard;
-                        }
-                        hotelTGX.Rooms.Add(roomTGX);
                     }
                 }
             }
             return hotelTGX;
         }
 
-        #endregion
+
+    #endregion
 
         #region ApiResort
+
         /* Function private asynchronous to obtain data of Api Resort Hotels and save information in TravelgateX format
         *  Receive HotelListTGX and return hotelListTGX
         */
@@ -122,24 +167,14 @@ namespace codeTestTgx.Controllers
         {
             foreach (RoomApiResort roomApiResort in hotel.rooms)
             {
-                RoomsTGX roomTGX = new RoomsTGX();
-                roomTGX.Name = roomApiResort.name;
-
-                // Distinction of the type of room by the name
-                if (roomApiResort.name.ToUpper().Equals(nameof(Room_Type.Suite).ToString().ToUpper()))
-                {
-                    roomTGX.Room_type = Room_Type.Suite;
-                }
-                else
-                {
-                    roomTGX.Room_type = Room_Type.Standard;
-                }
+                RoomTGX roomTGX = new RoomTGX(roomApiResort);
                 hotelTGX.Rooms.Add(roomTGX);
             }
 
             return hotelTGX;
         }
-        #endregion
+
+    #endregion
 
     }
 }
