@@ -12,14 +12,13 @@ namespace codeTestTgx.Models
 
         public DbSet<Hotels> hotelsItems { get; set; }
 
-        /*protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<Hotels>(entity =>
             {
                 entity.HasNoKey();
-
             });
-        }*/
+        }
     }
 }

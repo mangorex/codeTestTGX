@@ -3,28 +3,44 @@ using System.ComponentModel.DataAnnotations;
 
 namespace codeTestTgx.Models
 {
+    // public Codes CodeStatusEnum { get; set; }
+    //Could also be
+    //public string CodeStatus { get { return CodeStatusEnum.ToString(); } }
+    public enum Room_Type
+    {
+        Standard,
+        Suite
+    }
+
     public class Rooms
     {
-        [Key]
-        public string name { get; set; }
-        public string room_type { get; set; }
-        public List<string> meals_plan { get; set; }
-        public string price { get; set; }
+        public string Name { get; set; }
+        // public Room_Type Room_type { get; set; }
+        public string Room_type { get; set; }
+        public List<string> Meals_plan { get; set; }
+        public string Price { get; set; }
+
+        //public static implicit operator Rooms(List<Rooms> v)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 
     public class Hotel
     {
-        [Key]
-        public string code { get; set; }
-        public string name { get; set; }
-        public string city { get; set; }
-        public Rooms rooms { get; set; }
+        public string Code { get; set; }
+        public string Name { get; set; }
+        public string City { get; set; }
+        public List<Rooms> Rooms { get; set; }
     }
 
     public class Hotels
     {
-        [Key]
-        public int Id { get; set; }
         public List<Hotel> hotels { get; set; }
+
+        //public static implicit operator Hotels(List<Hotel> v)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }
