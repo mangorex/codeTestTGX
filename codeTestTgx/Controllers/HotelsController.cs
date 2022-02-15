@@ -18,7 +18,7 @@ namespace codeTestTgx.Controllers
         static string pathHotelsApiResort = "http://www.mocky.io/v2/5e4e43272f00006c0016a52b";
 
         #region Endpoints
-        
+
         // GET: api/Hotels
         [HttpGet]
         [Route("/api/hotelList")]
@@ -52,27 +52,34 @@ namespace codeTestTgx.Controllers
                 HotelListTGX atalaya = await responseHotels.Content.ReadAsAsync<HotelListTGX>();
                 HttpResponseMessage responseRooms = await client.GetAsync(pathRoomsAtalaya);
                 RoomsTypes rooms = await responseRooms.Content.ReadAsAsync<RoomsTypes>();
+                HttpResponseMessage responseMealPlan = await client.GetAsync(pathMealPlanAtalaya);
+                // FAIL IS HERE. In this foreach We are calling 2 times to here
+                MealPlanAtalaya mealPlanAtalaya =
+                    await responseMealPlan.Content.ReadAsAsync<MealPlanAtalaya>();
 
-                // Loop atalaya hotels to save the information in hotels list in TravelgateX format
-                foreach (HotelTGX hotel in atalaya.hotels)
+                if (responseMealPlan.IsSuccessStatusCode)
                 {
-                    HotelTGX hotelTGX = new HotelTGX(hotel.Code, hotel.Name, hotel.City);
-                    await GetRoomsAtalaya(hotelTGX, hotel, rooms);
-                    // hotelTGX.Rooms = XXXX;
-                    hotelsTGX.hotels.Add(hotelTGX);
-                    i++;
-                    Debug.WriteLine("GetHotelsAtalayaAsync i: " + i);
-                }
+                    // Loop atalaya hotels to save the information in hotels list in TravelgateX format
+                    foreach (HotelTGX hotel in atalaya.hotels)
+                    {
+                        HotelTGX hotelTGX = new HotelTGX(hotel.Code, hotel.Name, hotel.City);
+                        GetRoomsAtalaya(hotelTGX, hotel, rooms, mealPlanAtalaya);
 
-                // FAIL HERE. Probablemente haya que llamar aqui al meal plan
-                
+                        hotelsTGX.hotels.Add(hotelTGX);
+                        i++;
+                        Debug.WriteLine("GetHotelsAtalayaAsync i: " + i);
+                    }
+
+                    // FAIL HERE. Probablemente haya que llamar aqui al meal plan
+                }
             }
         }
 
         // Function private to get Rooms of atalaya
         // This functions calls to GetMealPlansInRooms to get Meal plans and duplicate rooms correctly
         // private async Task<HotelTGX> GetRoomsAtalaya(HotelTGX hotelTGX, HotelTGX hotel, RoomsTypes rooms)
-        private async Task GetRoomsAtalaya(HotelTGX hotelTGX, HotelTGX hotel, RoomsTypes rooms)
+        private void GetRoomsAtalaya(HotelTGX hotelTGX, HotelTGX hotel,
+            RoomsTypes rooms, MealPlanAtalaya mealPlanAtalaya)
         {
             int iroomType = 0, ihotelCode = 0;
 
@@ -85,27 +92,18 @@ namespace codeTestTgx.Controllers
                     {
                         // RoomTGX roomTGX = new RoomTGX(roomType);
 
-                        HttpResponseMessage responseMealPlan =
-                            await client.GetAsync(pathMealPlanAtalaya);
-
-                        if (responseMealPlan.IsSuccessStatusCode)
-                        {
-                            // FAIL IS HERE. In this foreach We are calling 2 times to here
-                            MealPlanAtalaya mealPlanAtalaya = await
-                            responseMealPlan.Content.ReadAsAsync<MealPlanAtalaya>();
-                            GetMealPlansInRoomsAtalaya(hotelTGX, hotel, // roomTGX,
-                                mealPlanAtalaya, roomType);
-                        }
-
-                        // hotelTGX.Rooms.Add(roomTGX);
-                        ihotelCode++;
-                        Debug.WriteLine("GetRoomsAtalaya i hotelCode: " + ihotelCode);
+                        GetMealPlansInRoomsAtalaya(hotelTGX, hotel, // roomTGX,
+                            mealPlanAtalaya, roomType);
                     }
-          
+
+                    // hotelTGX.Rooms.Add(roomTGX);
+                    ihotelCode++;
+                    Debug.WriteLine("GetRoomsAtalaya i hotelCode: " + ihotelCode);
                 }
-                iroomType++;
-                Debug.WriteLine("GetRoomsAtalaya i roomType: " + iroomType);
+
             }
+            iroomType++;
+            Debug.WriteLine("GetRoomsAtalaya i roomType: " + iroomType);
         }
 
         // This functin get meal plans and duplicate rooms saving code mealplan and price
@@ -117,7 +115,9 @@ namespace codeTestTgx.Controllers
             RoomTGX roomTGX = null;
 
             foreach (MealPlan mealPlan in mealPlanAtalaya.meal_plans)
+            // for (int iMealPlan = 0; iMealPlan < mealPlanAtalaya.meal_plans.Count(); iMealPlan++)
             {
+                // MealPlan mealPlan = mealPlanAtalaya.meal_plans[iMealPlan];
                 if (nameof(mealPlan.hotel.acs).Equals(hotel.Code))
                 {
                     string codeMealPlan = mealPlan.code;
@@ -125,58 +125,28 @@ namespace codeTestTgx.Controllers
                     {
                         roomTGX = new RoomTGX(roomType);
                         Acs acs = mealPlan.hotel.acs[i];
+                        // Acs acs = mealPlan.hotel.acs.FirstOrDefault();
                         roomTGX.Price = acs.price;
                         roomTGX.Meals_plan = codeMealPlan;
                         roomTGX.Room_type = acs.room.ToUpper().Equals(
                             Room_Type.Suite.ToString().ToUpper())
                             ? Room_Type.Suite : Room_Type.Standard;
                         hotelTGX.Rooms.Add(roomTGX);
+                        // var itemToRemove = mealPlan.hotel.ave.Find(m => m.price == acs.price && m.room == acs.room);
+                        // mealPlan.hotel.ave.Remove(itemToRemove);
                     }
-                    /*
-                    Hotel hotelMealPlan = mealPlan.hotel;
-                    Acs acs = (Acs)hotelMealPlan.acs.FirstOrDefault();
-                    roomTGX.Price = acs.price;
-                    roomTGX.Meals_plan = mealPlan.code;
-                    roomTGX.Room_type = acs.room.Equals(Room_Type.Suite) ? Room_Type.Suite : Room_Type.Standard;
-                    hotelTGX.Rooms.Add(roomTGX);
-
-                    for (int i = 1; i < hotelMealPlan.acs.Count; i++)
-                    {
-                        roomTGX = new RoomTGX(roomType);
-                        acs = hotelMealPlan.acs[i];
-                        roomTGX.Price = acs.price;
-                        roomTGX.Meals_plan = mealPlan.code;
-                        roomTGX.Room_type = acs.room.Equals(Room_Type.Suite) ? Room_Type.Suite : Room_Type.Standard;
-                        hotelTGX.Rooms.Add(roomTGX);
-                    }
-                    
-
-                    roomTGX = new RoomTGX(roomType);
-                    */
                 }
 
                 else if (nameof(mealPlan.hotel.ave).Equals(hotel.Code))
                 {
-                    // Hotel hotelMealPlan = mealPlan.hotel;
-                    // Ave ave = (Ave)hotelMealPlan.ave.FirstOrDefault();
                     roomTGX = new RoomTGX(roomType);
                     Ave ave = (Ave)mealPlan.hotel.ave.FirstOrDefault();
                     roomTGX.Price = ave.price;
                     roomTGX.Meals_plan = mealPlan.code;
                     roomTGX.Room_type = ave.room.Equals(Room_Type.Suite) ? Room_Type.Suite : Room_Type.Standard;
                     hotelTGX.Rooms.Add(roomTGX);
-
-                    /*for (int i = 1; i < hotelMealPlan.ave.Count; i++)
-                    {
-                        roomTGX = new RoomTGX(roomType);
-                        ave = hotelMealPlan.ave[i];
-                        roomTGX.Price = ave.price;
-                        roomTGX.Meals_plan = mealPlan.code;
-                        roomTGX.Room_type = ave.room.Equals(Room_Type.Suite) ? Room_Type.Suite : Room_Type.Standard;
-                        hotelTGX.Rooms.Add(roomTGX);
-                    }*/
-
-                    // roomTGX = new RoomTGX(roomType);
+                    // var itemToRemove = mealPlan.hotel.ave.Find(m=> m.price == ave.price && m.room == ave.room);
+                    // mealPlan.hotel.ave.Remove(itemToRemove);
                 }
 
                 iMealPlan++;
