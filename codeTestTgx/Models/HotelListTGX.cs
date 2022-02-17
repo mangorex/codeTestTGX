@@ -1,4 +1,6 @@
-﻿namespace codeTestTgx.Models
+﻿using Newtonsoft.Json;
+
+namespace codeTestTgx.Models
 {
     // Model HotelListTGX respecting TravelgateX format
 
@@ -23,8 +25,12 @@
     {
         public string Name { get; set; }
         public Room_Type Room_type { get; set; }
-        public string Meals_plan { get; set; }
+        public string Meal_plan { get; set; }
         public int Price { get; set; }
+
+        // I want to not show nights when nights is null. This is supposed to work, but no :( 
+        [JsonProperty("Nights", NullValueHandling = NullValueHandling.Ignore)]
+        public int? Nights {  get; set; }
 
         public RoomTGX()
         {
@@ -44,6 +50,8 @@
             {
                 this.Room_type = Room_Type.Standard;
             }
+
+            this.Nights = null;
         }
 
         public RoomTGX(RoomApiResort roomApiResort)
@@ -69,6 +77,11 @@
         public string Name { get; set; }
         public string City { get; set; }
         public List<RoomTGX> Rooms { get; set; }
+
+        public HotelTGX()
+        {
+            this.Rooms = new List<RoomTGX>();
+        }
 
         public HotelTGX(string Code, string Name, string City)
         {

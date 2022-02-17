@@ -42,20 +42,54 @@ namespace codeTestTgx.Controllers
         // GET: api/Hotels
         [HttpGet]
         [Route("/api/itineraryCancun")]
-        public async Task<HotelTGX> GetIteneraryCancun()
+        public async Task<HotelListTGX> GetIteneraryCancun()
         {
-            HotelListTGX hotelsTGX = new HotelListTGX();
+            HotelListTGX hotelsTGXOrig = new HotelListTGX();
             HttpResponseMessage responseHotels = await client.GetAsync(pathApiHotelsTGX);
-            hotelsTGX = await responseHotels.Content.ReadAsAsync<HotelListTGX>();
+            hotelsTGXOrig = await responseHotels.Content.ReadAsAsync<HotelListTGX>();
 
-            string hotelJson = JsonConvert.SerializeObject(hotelsTGX);
+            string hotelJson = JsonConvert.SerializeObject(hotelsTGXOrig);
 
             JObject hotelJobj = JObject.Parse(hotelJson);
 
-            HotelTGX hotelTGX = (HotelTGX)hotelsTGX.hotels.Where(h => h.City.Equals("Malaga")).FirstOrDefault();
-            // hotelsTGX = JsonConvert.DeserializeObject<HotelListTGX>(hotelsTGXMalaga);
+            List<HotelTGX> hotelsTGX = hotelsTGXOrig.hotels.Where(
+                h => h.City.Equals("Malaga") || h.City.Equals("Cancun")).ToList();
 
-            return hotelTGX;
+            HotelListTGX hotelsTGXResul = new HotelListTGX();
+            RoomTGX roomTGX = new RoomTGX();
+            foreach (HotelTGX hotelTGX in hotelsTGX)
+            {
+                HotelTGX hotelTGXResul = new HotelTGX(hotelTGX.Code, hotelTGX.Name, hotelTGX.City);
+
+                foreach (RoomTGX room in hotelTGX.Rooms)
+                {
+
+                    if(
+                        hotelTGX.City.Equals("Malaga") && 
+                        room.Meal_plan.Equals("pc") &&
+                        room.Room_type.Equals(Room_Type.Standard)
+                    ) {
+                        room.Nights = 3;
+                        room.Price = (int)(room.Price * room.Nights) * 2;
+                        hotelTGXResul.Rooms.Add(room);
+                    }
+
+                    if (
+                        hotelTGX.City.Equals("Cancun") &&
+                        room.Meal_plan.Equals("ad") &&
+                        room.Room_type.Equals(Room_Type.Standard)
+                    )
+                    {
+                        room.Nights = 5;
+                        room.Price = (int)(room.Price * room.Nights) * 2;
+                        hotelTGXResul.Rooms.Add(room);
+                    }
+                }
+
+                hotelsTGXResul.hotels.Add(hotelTGXResul);
+            }
+
+            return hotelsTGXResul;
         }
 
         #endregion
@@ -136,7 +170,7 @@ namespace codeTestTgx.Controllers
                             roomTGX = new RoomTGX(roomType);
                             Acs acs = mealPlan.hotel.acs[i];
                             roomTGX.Price = acs.price;
-                            roomTGX.Meals_plan = codeMealPlan;
+                            roomTGX.Meal_plan = codeMealPlan;
                             roomTGX.Room_type = acs.room.ToUpper().Equals(
                                 Room_Type.Suite.ToString().ToUpper())
                                 ? Room_Type.Suite : Room_Type.Standard;
@@ -151,7 +185,7 @@ namespace codeTestTgx.Controllers
                     roomTGX = new RoomTGX(roomType);
                     Ave ave = (Ave)mealPlan.hotel.ave.FirstOrDefault();
                     roomTGX.Price = ave.price;
-                    roomTGX.Meals_plan = mealPlan.code;
+                    roomTGX.Meal_plan = mealPlan.code;
                     roomTGX.Room_type = ave.room.Equals(Room_Type.Suite) ? Room_Type.Suite : Room_Type.Standard;
                     hotelTGX.Rooms.Add(roomTGX);
                 }
@@ -200,7 +234,7 @@ namespace codeTestTgx.Controllers
                     {
                         RoomTGX roomTGX = new RoomTGX(roomApiResort);
                         roomTGX.Price = mealPlanAr.price;
-                        roomTGX.Meals_plan = mealPlanAr.code;
+                        roomTGX.Meal_plan = mealPlanAr.code;
                         roomTGX.Room_type = mealPlanAr.room_type.Equals("su")
                             ? Room_Type.Suite : Room_Type.Standard;
                         hotelTGX.Rooms.Add(roomTGX);
