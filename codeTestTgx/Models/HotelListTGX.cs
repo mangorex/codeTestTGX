@@ -26,6 +26,11 @@
         public string Meals_plan { get; set; }
         public int Price { get; set; }
 
+        public RoomTGX()
+        {
+
+        }
+
         public RoomTGX(RoomsType roomType)
         {
             this.Name = roomType.name;

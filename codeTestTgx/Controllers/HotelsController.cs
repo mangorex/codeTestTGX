@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using codeTestTgx.Models;
 using System.Diagnostics;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace codeTestTgx.Controllers
 {
@@ -18,6 +20,7 @@ namespace codeTestTgx.Controllers
         static string pathMPAtalaya = "http://www.mocky.io/v2/5e4a7e282f0000490097d252";
         static string pathHotelsApiResort = "http://www.mocky.io/v2/5e4e43272f00006c0016a52b";
         static string pathRoomMPApiResort = "http://www.mocky.io/v2/5e4a7dd02f0000290097d24b";
+        static string pathApiHotelsTGX = "https://localhost:7296/api/hotelList";
         #endregion
 
         #region Endpoints
@@ -34,6 +37,25 @@ namespace codeTestTgx.Controllers
             await GetApiResortAsync(hotelsTGX);
 
             return hotelsTGX;
+        }
+
+        // GET: api/Hotels
+        [HttpGet]
+        [Route("/api/itineraryCancun")]
+        public async Task<HotelTGX> GetIteneraryCancun()
+        {
+            HotelListTGX hotelsTGX = new HotelListTGX();
+            HttpResponseMessage responseHotels = await client.GetAsync(pathApiHotelsTGX);
+            hotelsTGX = await responseHotels.Content.ReadAsAsync<HotelListTGX>();
+
+            string hotelJson = JsonConvert.SerializeObject(hotelsTGX);
+
+            JObject hotelJobj = JObject.Parse(hotelJson);
+
+            HotelTGX hotelTGX = (HotelTGX)hotelsTGX.hotels.Where(h => h.City.Equals("Malaga")).FirstOrDefault();
+            // hotelsTGX = JsonConvert.DeserializeObject<HotelListTGX>(hotelsTGXMalaga);
+
+            return hotelTGX;
         }
 
         #endregion
