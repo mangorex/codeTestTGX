@@ -1,12 +1,10 @@
 ﻿using Newtonsoft.Json;
 
+// Model HotelListTGX respecting TravelgateX format
+
 namespace codeTestTgx.Models
 {
-    // Model HotelListTGX respecting TravelgateX format
 
-    // public Codes CodeStatusEnum { get; set; }
-    //Could also be
-    //public string CodeStatus { get { return CodeStatusEnum.ToString(); } }
     public enum Room_Type
     {
         Standard,
@@ -21,6 +19,7 @@ namespace codeTestTgx.Models
         Ad
     }
 
+    // Class of one room in TravelgateX format
     public class RoomTGX
     {
         public string Name { get; set; }
@@ -71,6 +70,7 @@ namespace codeTestTgx.Models
 
     }
 
+    // Class of one hotel in TravelgateX format
     public class HotelTGX
     {
         public string Code { get; set; }
@@ -92,12 +92,13 @@ namespace codeTestTgx.Models
         }
     }
 
+    // Class of hotel list in TravelgateX format
     public class HotelListTGX
     {
-        public List<HotelTGX> hotels { get; set; }
+        public List<HotelTGX> Hotels { get; set; }
         public HotelListTGX()
         {
-            this.hotels = new List<HotelTGX>();
+            this.Hotels = new List<HotelTGX>();
         }
     }
 

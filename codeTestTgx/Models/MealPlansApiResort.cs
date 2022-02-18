@@ -1,6 +1,9 @@
-﻿namespace codeTestTgx.Models
+﻿// Model of Mealplan in ApiResort format
+
+namespace codeTestTgx.Models
 {
-    public class Regimene
+    // Class of mealplan in Api Resort format
+    public class MPApiResort
     {
         public string code { get; set; }
         public string name { get; set; }
@@ -9,9 +12,10 @@
         public int price { get; set; }
     }
 
+    // Class of list mealplans in Api Resort format
     public class MealPlansApiResort
     {
-        public List<Regimene> regimenes { get; set; }
+        public List<MPApiResort> regimenes { get; set; }
     }
 
 

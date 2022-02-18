@@ -25,7 +25,9 @@ namespace codeTestTgx.Controllers
 
         #region Endpoints
 
-        // GET: api/Hotels
+        // GET: api/hotelList
+        // First endpoint of the test
+        // Hotel list
         [HttpGet]
         [Route("/api/hotelList")]
         public async Task<HotelListTGX> GetHotels()
@@ -33,37 +35,46 @@ namespace codeTestTgx.Controllers
             // Instantiate result variable of hotel list respecting TravelgateX format
             HotelListTGX hotelsTGX = new HotelListTGX();
 
+            // Asynchonous function to obtains hotel and rooms of Atalaya provider
             await GetHotelsAtalayaAsync(hotelsTGX);
+            // Asynchonous function to obtains hotel and rooms of ApiResort provider
             await GetApiResortAsync(hotelsTGX);
 
             return hotelsTGX;
         }
 
         // GET: api/Hotels
+        // Second endpoint
+        // Get itinerary cancun
+        // This function call first endpoint and return the itinerary Cancun and Malaga
         [HttpGet]
         [Route("/api/itineraryCancun")]
         public async Task<HotelListTGX> GetIteneraryCancun()
         {
             HotelListTGX hotelsTGXOrig = new HotelListTGX();
+            HotelListTGX hotelsTGXResul = new HotelListTGX();
+            RoomTGX roomTGX = new RoomTGX();
+
+            // Call first endpoint
             HttpResponseMessage responseHotels = await client.GetAsync(pathApiHotelsTGX);
             hotelsTGXOrig = await responseHotels.Content.ReadAsAsync<HotelListTGX>();
 
+            // Serialize hotel json
             string hotelJson = JsonConvert.SerializeObject(hotelsTGXOrig);
 
-            JObject hotelJobj = JObject.Parse(hotelJson);
-
-            List<HotelTGX> hotelsTGX = hotelsTGXOrig.hotels.Where(
+            // Filter hotels by Malaga and Cancun cities
+            List<HotelTGX> hotelsTGX = hotelsTGXOrig.Hotels.Where(
                 h => h.City.Equals("Malaga") || h.City.Equals("Cancun")).ToList();
 
-            HotelListTGX hotelsTGXResul = new HotelListTGX();
-            RoomTGX roomTGX = new RoomTGX();
-            foreach (HotelTGX hotelTGX in hotelsTGX)
+
+            foreach ( HotelTGX hotelTGX in hotelsTGX )
             {
                 HotelTGX hotelTGXResul = new HotelTGX(hotelTGX.Code, hotelTGX.Name, hotelTGX.City);
 
-                foreach (RoomTGX room in hotelTGX.Rooms)
+                // foreach to filter hotels Malaga with Pension Completa and room standard
+                // and filter Cancun with alojamiento y desayuno and Room type standard
+                foreach ( RoomTGX room in hotelTGX.Rooms )
                 {
-
                     if(
                         hotelTGX.City.Equals("Malaga") && 
                         room.Meal_plan.Equals("pc") &&
@@ -78,15 +89,14 @@ namespace codeTestTgx.Controllers
                         hotelTGX.City.Equals("Cancun") &&
                         room.Meal_plan.Equals("ad") &&
                         room.Room_type.Equals(Room_Type.Standard)
-                    )
-                    {
+                    ) {
                         room.Nights = 5;
                         room.Price = (int)(room.Price * room.Nights) * 2;
                         hotelTGXResul.Rooms.Add(room);
                     }
                 }
 
-                hotelsTGXResul.hotels.Add(hotelTGXResul);
+                hotelsTGXResul.Hotels.Add(hotelTGXResul);
             }
 
             return hotelsTGXResul;
@@ -97,9 +107,10 @@ namespace codeTestTgx.Controllers
         #region AtalayaHotels
 
         /* Function private asynchronous to obtain data of Atalaya Hotels and save information
-        * in TravelgateX format Receive HotelListTGX and return hotelListTGX
+        * in TravelgateX format.
+        * Receive HotelListTGX hotelsTGX
         */
-        private async Task GetHotelsAtalayaAsync(HotelListTGX hotelsTGX)
+        private async Task GetHotelsAtalayaAsync( HotelListTGX hotelsTGX )
         {
             // Get of hotels list in Atalaya format
             HttpResponseMessage responseHotels = await client.GetAsync(pathHotelsAtalaya);
@@ -112,21 +123,21 @@ namespace codeTestTgx.Controllers
                 RoomsTypes rooms = await responseRooms.Content.ReadAsAsync<RoomsTypes>();
                 HttpResponseMessage responseMPAta = await client.GetAsync(pathMPAtalaya);
 
-                // FAIL IS HERE. In this foreach We are calling 2 times to here
                 MealPlanAtalaya mealPlanAtalaya =
                     await responseMPAta.Content.ReadAsAsync<MealPlanAtalaya>();
 
                 if (responseMPAta.IsSuccessStatusCode)
                 {
-                    // Loop atalaya hotels to save the information in hotels list in TravelgateX format
-                    foreach (HotelTGX hotel in atalaya.hotels)
+                    // Loop atalaya hotels to save the information in hotels list in TravelgateX format (hotelsTGX)
+                    foreach (HotelTGX hotel in atalaya.Hotels)
                     {
                         HotelTGX hotelTGX = new HotelTGX(hotel.Code, hotel.Name, hotel.City);
+                        // Obtain hotel travelgatex hotelTGX
                         GetRoomsAtalaya(hotelTGX, hotel, rooms, mealPlanAtalaya);
-                        hotelsTGX.hotels.Add(hotelTGX);
+                        // Add hotelTGX to hotelsTGX result
+                        hotelsTGX.Hotels.Add(hotelTGX);
                     }
 
-                    // FAIL HERE. Probablemente haya que llamar aqui al meal plan
                 }
             }
         }
@@ -135,8 +146,8 @@ namespace codeTestTgx.Controllers
         // This functions calls to GetMealPlansInRooms to get Meal plans and duplicate rooms correctly
         // private async Task<HotelTGX> GetRoomsAtalaya(HotelTGX hotelTGX, HotelTGX hotel, RoomsTypes rooms)
         private void GetRoomsAtalaya(HotelTGX hotelTGX, HotelTGX hotel,
-            RoomsTypes rooms, MealPlanAtalaya mealPlanAtalaya)
-        {
+            RoomsTypes rooms, MealPlanAtalaya mealPlanAtalaya
+        ) {
             // Loop to save roooms in TravelgateX format
             foreach (RoomsType roomType in rooms.rooms_type)
             {
@@ -144,41 +155,51 @@ namespace codeTestTgx.Controllers
                 {
                     if (hotelCode.Equals(hotel.Code))
                     {
-                        GetMealPlansInRoomsAtalaya(hotelTGX, hotel, // roomTGX,
+                        // Get MealPlamns and rooms of atalaya hotels
+                        GetMealPlansInRoomsAtalaya(hotelTGX, hotel,
                             mealPlanAtalaya, roomType);
                     }
                 }
-
             }
         }
 
-        // This functin get meal plans and duplicate rooms saving code mealplan and price
-        private void GetMealPlansInRoomsAtalaya(HotelTGX hotelTGX, HotelTGX hotel, // RoomTGX roomTGX,
-            MealPlanAtalaya mealPlanAtalaya, RoomsType roomType)
-        {
+        // This function get meal plans and duplicate rooms saving
+        // code mealplan and price in TravelgateX format
+        private void GetMealPlansInRoomsAtalaya( HotelTGX hotelTGX, HotelTGX hotel,
+            MealPlanAtalaya mealPlanAtalaya, RoomsType roomType 
+        ) {
             RoomTGX roomTGX = null;
 
+            // foreach to get mealplans of atalaya
             foreach (MealPlan mealPlan in mealPlanAtalaya.meal_plans)
             {
                 if (nameof(mealPlan.hotel.acs).Equals(hotel.Code))
                 {
                     string codeMealPlan = mealPlan.code;
+
+                    // For to get mealplans of hotel acs
                     for (int i = 0; i < mealPlan.hotel.acs.Count(); i++)
                     {
                         if (roomType.code.Equals(mealPlan.hotel.acs[i].room))
                         {
+                            // Instantiate room tgx
                             roomTGX = new RoomTGX(roomType);
+                            // Save mealplans in TravelgateX format. In the roomTGX
                             Acs acs = mealPlan.hotel.acs[i];
                             roomTGX.Price = acs.price;
                             roomTGX.Meal_plan = codeMealPlan;
+                            // Save type of room
                             roomTGX.Room_type = acs.room.ToUpper().Equals(
                                 Room_Type.Suite.ToString().ToUpper())
                                 ? Room_Type.Suite : Room_Type.Standard;
+
+                            // Add room in hotelTGX. Each mealplan create a copy of the rooom
                             hotelTGX.Rooms.Add(roomTGX);
                         }
                     }
                 }
 
+                // The same as with acs, but with hotel ave. I think it showld be refactored, but I do not have enough time 
                 else if (nameof(mealPlan.hotel.ave).Equals(hotel.Code) &&
                     roomType.code.Equals(mealPlan.hotel.ave.FirstOrDefault().room) 
                 ) {
@@ -198,7 +219,7 @@ namespace codeTestTgx.Controllers
         #region ApiResort
 
         /* Function private asynchronous to obtain data of Api Resort Hotels and save information in TravelgateX format
-        *  Receive HotelListTGX and return hotelListTGX
+        *  Receive HotelListTGX
         */
         private async Task GetApiResortAsync(HotelListTGX hotelsTGX)
         {
@@ -215,18 +236,24 @@ namespace codeTestTgx.Controllers
                 foreach (HotelApiResort hotel in apiResort.hotels)
                 {
                     HotelTGX hotelTGX = new HotelTGX(hotel.code, hotel.name, hotel.location);
+                    // Get rooms and meal plan of ApiResort and add hotel to hotelsTGX
                     GetRoomsApiResort(hotelTGX, hotel, mealPlansAR);
-                    hotelsTGX.hotels.Add(hotelTGX);
+                    hotelsTGX.Hotels.Add(hotelTGX);
                 }
             }
 
         }
 
+        /* Function to get Rooms and mealplans of Api Resorts
+         * Receive hotelTGX (hotel object in TravelgateX format), 
+         * hotel (hotel in format of ApiResort) 
+         * and mealPlansAR( mealplans in format Api Resort 
+        */
         private void GetRoomsApiResort(HotelTGX hotelTGX, HotelApiResort hotel, MealPlansApiResort mealPlansAR)
         {
             foreach (RoomApiResort roomApiResort in hotel.rooms)
             {
-                foreach (Regimene mealPlanAr in mealPlansAR.regimenes)
+                foreach (MPApiResort mealPlanAr in mealPlansAR.regimenes)
                 {
                     if (hotel.code.Equals(mealPlanAr.hotel) &&
                         roomApiResort.code.Equals(mealPlanAr.room_type)

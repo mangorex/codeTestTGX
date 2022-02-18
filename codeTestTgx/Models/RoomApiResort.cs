@@ -1,12 +1,15 @@
-﻿namespace codeTestTgx.Models
+﻿// Model of Mealplan in ApiResort format
+
+namespace codeTestTgx.Models
 {
-    // Model to get json of hotelList in RoomApiResort
+    // Class of Room in ApiResortFormat
     public class RoomApiResort
     {
         public string code { get; set; }
         public string name { get; set; }
     }
 
+    // Class of list Room in Api Resort format
     public class HotelApiResort
     {
         public string code { get; set; }
@@ -15,6 +18,7 @@
         public List<RoomApiResort> rooms { get; set; }
     }
 
+    // Class of hotel lists and Rooms in Api Resort format
     public class RoomsApiResort
     {
         public List<HotelApiResort> hotels { get; set; }
