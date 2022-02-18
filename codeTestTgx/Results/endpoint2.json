@@ -1,0 +1,32 @@
+{
+  "hotels": [
+    {
+      "code": "acs",
+      "name": "Atalaya Costa Sol",
+      "city": "Malaga",
+      "rooms": [
+        {
+          "name": "Habitacion Simple",
+          "room_type": 0,
+          "meal_plan": "pc",
+          "price": 378,
+          "nights": 3
+        }
+      ]
+    },
+    {
+      "code": "hrc",
+      "name": "Hotel Resort Cancun",
+      "city": "Cancun",
+      "rooms": [
+        {
+          "name": "Standard",
+          "room_type": 0,
+          "meal_plan": "ad",
+          "price": 280,
+          "nights": 5
+        }
+      ]
+    }
+  ]
+}

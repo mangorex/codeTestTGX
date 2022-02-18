@@ -1,0 +1,228 @@
+{
+  "hotels": [
+    {
+      "code": "ave",
+      "name": "Atalaya Valencia Escape",
+      "city": "Valencia",
+      "rooms": [
+        {
+          "name": "Habitacion Simple",
+          "room_type": 0,
+          "meal_plan": "pc",
+          "price": 43,
+          "nights": null
+        },
+        {
+          "name": "Habitacion Simple",
+          "room_type": 0,
+          "meal_plan": "mp",
+          "price": 32,
+          "nights": null
+        },
+        {
+          "name": "Habitacion Simple",
+          "room_type": 0,
+          "meal_plan": "sa",
+          "price": 22,
+          "nights": null
+        },
+        {
+          "name": "Habitacion Simple",
+          "room_type": 0,
+          "meal_plan": "ad",
+          "price": 26,
+          "nights": null
+        }
+      ]
+    },
+    {
+      "code": "acs",
+      "name": "Atalaya Costa Sol",
+      "city": "Malaga",
+      "rooms": [
+        {
+          "name": "Habitacion Simple",
+          "room_type": 0,
+          "meal_plan": "pc",
+          "price": 63,
+          "nights": null
+        },
+        {
+          "name": "Habitacion Simple",
+          "room_type": 0,
+          "meal_plan": "mp",
+          "price": 53,
+          "nights": null
+        },
+        {
+          "name": "Habitacion Simple",
+          "room_type": 0,
+          "meal_plan": "sa",
+          "price": 43,
+          "nights": null
+        },
+        {
+          "name": "Habitacion Simple",
+          "room_type": 0,
+          "meal_plan": "ad",
+          "price": 45,
+          "nights": null
+        },
+        {
+          "name": "Habitacion Suite",
+          "room_type": 1,
+          "meal_plan": "pc",
+          "price": 98,
+          "nights": null
+        },
+        {
+          "name": "Habitacion Suite",
+          "room_type": 1,
+          "meal_plan": "mp",
+          "price": 68,
+          "nights": null
+        },
+        {
+          "name": "Habitacion Suite",
+          "room_type": 1,
+          "meal_plan": "sa",
+          "price": 58,
+          "nights": null
+        },
+        {
+          "name": "Habitacion Suite",
+          "room_type": 1,
+          "meal_plan": "ad",
+          "price": 62,
+          "nights": null
+        }
+      ]
+    },
+    {
+      "code": "hrc",
+      "name": "Hotel Resort Cancun",
+      "city": "Cancun",
+      "rooms": [
+        {
+          "name": "Standard",
+          "room_type": 0,
+          "meal_plan": "pc",
+          "price": 45,
+          "nights": null
+        },
+        {
+          "name": "Standard",
+          "room_type": 0,
+          "meal_plan": "mp",
+          "price": 35,
+          "nights": null
+        },
+        {
+          "name": "Standard",
+          "room_type": 0,
+          "meal_plan": "sa",
+          "price": 22,
+          "nights": null
+        },
+        {
+          "name": "Standard",
+          "room_type": 0,
+          "meal_plan": "ad",
+          "price": 28,
+          "nights": null
+        },
+        {
+          "name": "Suite",
+          "room_type": 1,
+          "meal_plan": "pc",
+          "price": 75,
+          "nights": null
+        },
+        {
+          "name": "Suite",
+          "room_type": 1,
+          "meal_plan": "mp",
+          "price": 65,
+          "nights": null
+        },
+        {
+          "name": "Suite",
+          "room_type": 1,
+          "meal_plan": "sa",
+          "price": 40,
+          "nights": null
+        },
+        {
+          "name": "Suite",
+          "room_type": 1,
+          "meal_plan": "ad",
+          "price": 42,
+          "nights": null
+        }
+      ]
+    },
+    {
+      "code": "hrm",
+      "name": "Hotel Resort Miami",
+      "city": "Miami",
+      "rooms": [
+        {
+          "name": "Standard",
+          "room_type": 0,
+          "meal_plan": "pc",
+          "price": 55,
+          "nights": null
+        },
+        {
+          "name": "Standard",
+          "room_type": 0,
+          "meal_plan": "mp",
+          "price": 47,
+          "nights": null
+        },
+        {
+          "name": "Standard",
+          "room_type": 0,
+          "meal_plan": "sa",
+          "price": 39,
+          "nights": null
+        },
+        {
+          "name": "Standard",
+          "room_type": 0,
+          "meal_plan": "ad",
+          "price": 42,
+          "nights": null
+        },
+        {
+          "name": "Suite",
+          "room_type": 1,
+          "meal_plan": "pc",
+          "price": 85,
+          "nights": null
+        },
+        {
+          "name": "Suite",
+          "room_type": 1,
+          "meal_plan": "mp",
+          "price": 78,
+          "nights": null
+        },
+        {
+          "name": "Suite",
+          "room_type": 1,
+          "meal_plan": "sa",
+          "price": 62,
+          "nights": null
+        },
+        {
+          "name": "Suite",
+          "room_type": 1,
+          "meal_plan": "ad",
+          "price": 65,
+          "nights": null
+        }
+      ]
+    }
+  ]
+}
