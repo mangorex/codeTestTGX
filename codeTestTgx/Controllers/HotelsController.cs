@@ -53,7 +53,6 @@ namespace codeTestTgx.Controllers
         {
             HotelListTGX hotelsTGXOrig = new HotelListTGX();
             HotelListTGX hotelsTGXResul = new HotelListTGX();
-            RoomTGX roomTGX = new RoomTGX();
 
             // Call first endpoint
             HttpResponseMessage responseHotels = await client.GetAsync(pathApiHotelsTGX);

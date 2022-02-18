@@ -1,10 +1,12 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 // Model HotelListTGX respecting TravelgateX format
 
 namespace codeTestTgx.Models
 {
 
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum Room_Type
     {
         Standard,
