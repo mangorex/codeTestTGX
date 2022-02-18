@@ -1,13 +1,13 @@
 # codeTestTGX
 ## AUTHOR: Manuel Antonio Gómez Angulo
 ## START DATE: 12/02/2022
+## END DATE: 18/02/2022
 
 It is about a development in C# with .net 6 of a web api to do integrations hotels 
 
 ### Architecture and technologies used
 * **Windows 10**
 * **Net core 6**
-* Nginx Web server
 * Visual studio 2022 community Edition
 * Newtonsoft.Json
 
@@ -33,4 +33,4 @@ It is about a development in C# with .net 6 of a web api to do integrations hote
 * Fix [JsonConverter(typeof(StringEnumConverter))] in Room_Type enum to print key like a string (Standard or Suite)
 * Put Enum in RoomTGX in Mealplan
 
-So **many thanks to the people** who have given me the exercise, **to prove myself**
+So **many thanks to the people** who have given me the test **to prove myself**
